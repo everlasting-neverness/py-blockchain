@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="{{ url_for('index') }}" method="POST">
+    <div class="form-group">
+        <label for="creditor">Creditor</label>
+        <input type="text" class="form-control" id="creditor" aria-describedby="creditor" 
+            placeholder="Creditor" name="creditor" value="{{ request.form.get('creditor', '') }}"
+        >
+    </div>
+    <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="text" class="form-control" id="amount" aria-describedby="amount" 
+            placeholder="amount" name="amount" value="{{ request.form.get('amount', '') }}"
+        >
+    </div>
+    <div class="form-group">
+        <label for="borrower">Borrower</label>
+        <input type="text" class="form-control" id="borrower" aria-describedby="borrower" 
+            placeholder="Borrower" name="borrower" value="{{ request.form.get('borrower', '') }}"
+        >
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+</form>
+{% endblock %}
+
+{% block checking %}
+    {% if is_corrupted is defined %}
+        {% if is_corrupted == True %}
+            <h5 style="text-align:center;">The Chain is corrupted.</h5>
+            <p>
+                <button class="btn btn-info btn-block" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    Show blocks
+                </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+                <ul class="list-group">
+                    {% for block in chain_blocks %}
+                        <li class="list-group-item">
+                            <span>Block: </span><span>{{ block['block'] }}</span><span> Corrupted: </span><span>{{ block['corrupted'] }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <h5 style="text-align:center;">The Chain is Ok.</h5>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -4,7 +4,7 @@ import hashlib
 
 
 class Blockchain:
-    def __init__(self, working_dir):
+    def __init__(self, working_dir=os.curdir + '/blockchain/'):
         self.working_dir = working_dir
 
     def get_hash(self, filename):
@@ -20,7 +20,7 @@ class Blockchain:
 
         results = []
 
-        for file in files[1:]:
+        for file in files[2:]:
             f = open(self.working_dir + str(file))
             h = json.load(f)['hash']
 
@@ -36,6 +36,9 @@ class Blockchain:
         
         return results
 
+    def has_corrupted_results(self, results):
+        return any(res['corrupted'] == True for res in results)
+
     def write_block(self, name, amount, to_whom, prev_hash=''):
         files = self.get_sorted_files_list()
         last_file = files[-1]
@@ -49,11 +52,22 @@ class Blockchain:
         with open(self.working_dir + filename, 'w') as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
+    def add_block(self, name, amount, to_whom, prev_hash=''):
+        chain_blocks = self.check_integrity()
+        chain_is_corrupted = self.has_corrupted_results(chain_blocks)
+        if chain_is_corrupted == True:
+            print("The Chain is corrupted. Can't write blocks.")
+            return False
+        else:
+            self.write_block(name, amount, to_whom, prev_hash)
+            print("The Block was added.")
+            return True
+        
 
 def main():
     blockchanin_dir = os.curdir + '/blockchain/'
     blockchain = Blockchain(blockchanin_dir)
-    blockchain.write_block('vasia', 4, 'john')
+    blockchain.add_block('vasia', 4, 'john')
 
 
 if __name__ == "__main__":
